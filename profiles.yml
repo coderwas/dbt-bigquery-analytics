@@ -18,5 +18,3 @@ bq_dbt_exam_practise:
       method: oauth
       location: "{{ env_var('BQ_LOCATION_PROD') }}"
       dataproc_batch: null
-
-  

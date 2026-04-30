@@ -1,0 +1,86 @@
+# This is a basic workflow to help you get started with Actions
+
+name: DBT Deployment
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  dbt-deployment:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    env:
+      DBT_PROFILES_DIR: .
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a single command using the runners shell
+      - name: Checkout Repository
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        uses: actions/checkout@v4
+        
+      - name: Authentication to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+          export_environment_variables: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+        
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner }}-pip-
+
+      - name: Install DBT
+        run: |
+          pip install dbt
+          pip install dbt-bigquery
+      
+      - name: DBT Dependencies
+        run: dbt deps
+      
+      - name: Set Target
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+              echo "DBT_TARGET=prod" >> $GITHUB_ENV
+          else
+              echo "DBT_TARGET=dev" >> $GITHUB_ENV
+          fi
+        
+      - name: Set Env Variables
+        run: |
+          if [[ "$DBT_TARGET" == "dev" ]]; then
+            echo "BQ_PROJECT_DEV=${{ secrets.BQ_PROJECT_DEV }}" >> $GITHUB_ENV
+            echo "BQ_DATASET_DEV=${{ secrets.BQ_DATASET_DEV }}" >> $GITHUB_ENV
+            echo "BQ_LOCATION_DEV=${{ secrets.BQ_LOCATION_DEV }}" >> $GITHUB_ENV
+          else
+            echo "BQ_PROJECT_PROD=${{ secrets.BQ_PROJECT_PROD }}" >> $GITHUB_ENV
+            echo "BQ_DATASET_PROD=${{ secrets.BQ_DATASET_PROD }}" >> $GITHUB_ENV
+            echo "BQ_LOCATION_PROD=${{ secrets.BQ_LOCATION_PROD }}" >> $GITHUB_ENV
+          fi
+      
+      - name: Run DBT
+        run: dbt build --target $DBT_TARGET --fail-fast
+      
