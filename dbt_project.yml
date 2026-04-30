@@ -12,17 +12,14 @@ clean-targets:
 models:
   bq_dbt_exam_practise:
     staging:
-      +schema: "{{ 'staging_dev' if target.name == 'dev' else 'staging' }}"
       +materialized: view
     intermediate:
-      +schema: "{{ 'int_dev' if target.name == 'dev' else 'int'}}"
       +materialized: view
     marts:
       +materialized: table
-      +schema: "{{ 'mart_dev' if target.name == 'dev' else 'mart'}}"
 
 snapshots:
   bq_dbt_exam_practise:
-    +target_schema: "{{ 'snap_dev' if target.name == 'dev' else 'snap' }}"
+    +target_schema: "snap"
     +strategy: check
     +invalidate_hard_deletes: true
