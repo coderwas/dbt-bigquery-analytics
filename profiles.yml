@@ -1,0 +1,22 @@
+bq_dbt_exam_practise:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      threads: 16
+      project: "{{ env_var('BQ_PROJECT_DEV') }}"
+      dataset: "{{ env_var('BQ_DATASET_DEV') }}"
+      method: oauth
+      location: "{{ env_var('BQ_LOCATION_DEV') }}"
+      dataproc_batch: null
+    
+    prod:
+      type: bigquery
+      threads: 16
+      project: "{{ env_var('BQ_PROJECT_PROD') }}"
+      dataset: "{{ env_var('BQ_DATASET_PROD') }}"
+      method: oauth
+      location: "{{ env_var('BQ_LOCATION_PROD') }}"
+      dataproc_batch: null
+
+  
