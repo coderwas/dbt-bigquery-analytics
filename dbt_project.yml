@@ -1,0 +1,25 @@
+name: bq_dbt_exam_practise
+
+profile: bq_dbt_exam_practise
+
+seed-paths: ["seeds"]
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  bq_dbt_exam_practise:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+snapshots:
+  bq_dbt_exam_practise:
+    +target_schema: "snap"
+    +strategy: check
+    +invalidate_hard_deletes: true
