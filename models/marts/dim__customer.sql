@@ -11,7 +11,11 @@ with
         city,
         country,
         credit_limit,
-        date(dbt_valid_from) as valid_from,
+        case 
+            when row_number() over (partition by customer_id order by dbt_valid_from) = 1
+                then date('1900-01-01')
+            else date(dbt_valid_from)
+        end as valid_from,
         date(dbt_valid_to) as valid_to,
         case 
             when dbt_valid_to is null then 1
