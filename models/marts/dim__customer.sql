@@ -11,8 +11,8 @@ with
         city,
         country,
         credit_limit,
-        dbt_valid_from AS valid_from,
-        dbt_valid_to AS valid_to,
+        date(dbt_valid_from) as valid_from,
+        date(dbt_valid_to) as valid_to,
         case 
             when dbt_valid_to is null then 1
             else 0
