@@ -1,18 +1,24 @@
-WITH
-    customer AS (
-        SELECT
-            customer_id AS customer_key,
-            customer_id,
-            customer_name,
-            sales_rep_id,
-            city,
-            country,
-            credit_limit
-        FROM
-            {{ ref('stg__customers') }}
+with 
+    snapshot as (
+        select * from {{ ref('dim__customer_snapshot') }}
+    ),
+    final as (
+        select
+        dbt_scd_id as customer_key,
+        customer_id,
+        customer_name,
+        sales_rep_id,
+        city,
+        country,
+        credit_limit,
+        dbt_valid_from AS valid_from,
+        dbt_valid_to AS valid_to,
+        case 
+            when dbt_valid_to is null then 1
+            else 0
+        end as is_current
+
+    from snapshot
     )
 
-SELECT
-    *
-FROM
-    customer
+select * from final
