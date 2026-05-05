@@ -18,6 +18,9 @@ with
     dim_order_status as (
         select order_status, order_status_key from {{ ref('dim__order_status') }}
     ),
+    dim_employee as (
+        select employee_id, employee_key, valid_from, valid_to from {{ ref('dim__employee') }}
+    ),
     final as (
         select
         b.order_line_id as order_line_key,
@@ -49,6 +52,10 @@ with
             on b.product_id = dp.product_id
             and b.order_date >= dp.valid_from
             and (b.order_date < dp.valid_to or dp.valid_to is null)
+        left join dim_employee as de
+            on dc.sales_rep_id = de.employee_id
+            and b.order_date >= de.valid_from 
+            and (b.order_date < de.valid_to or de.valid_to is null)
 
         left join dim_date as dd_order
             on b.order_date = dd_order.date_day
@@ -58,6 +65,7 @@ with
 
         left join dim_order_status as dos
             on b.order_status = dos.order_status
+
     )
 
 select * from final
