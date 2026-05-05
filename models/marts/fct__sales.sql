@@ -4,7 +4,7 @@ with
     ),
 
     dim_customer as (
-        select customer_id, customer_key, valid_from, valid_to from {{ ref('dim__customer') }}
+        select customer_id, customer_key, sales_rep_id, valid_from, valid_to from {{ ref('dim__customer') }}
     ),
 
     dim_product as (
@@ -26,6 +26,7 @@ with
         b.order_line_id as order_line_key,
         dc.customer_key,
         dp.product_key,
+        de.employee_key,
         dd_order.date_key as order_date_key,
         dd_ship.date_key as shipped_date_key,
         dos.order_status_key,
@@ -52,6 +53,7 @@ with
             on b.product_id = dp.product_id
             and b.order_date >= dp.valid_from
             and (b.order_date < dp.valid_to or dp.valid_to is null)
+
         left join dim_employee as de
             on dc.sales_rep_id = de.employee_id
             and b.order_date >= de.valid_from 
