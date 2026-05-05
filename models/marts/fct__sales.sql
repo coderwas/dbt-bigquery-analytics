@@ -4,7 +4,7 @@ with
     ),
 
     dim_customer as (
-        select customer_id, customer_key from {{ ref('dim__customer') }}
+        select customer_id, customer_key, valid_from, valid_to from {{ ref('dim__customer') }}
     ),
 
     dim_product as (
@@ -45,6 +45,7 @@ with
 
         left join dim_customer as dc
             on b.customer_id = dc.customer_id
+            and b.order_date between date(dc.valid_from) and coalesce(date(dc.valid_to), current_date)
 
         left join dim_product as dp
             on b.product_id = dp.product_id
