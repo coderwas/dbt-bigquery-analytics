@@ -1,7 +1,7 @@
 WITH
     products AS (
         SELECT
-            productCode AS product_code,
+            productCode AS product_id,
             productName As product_name,
             productDescription AS product_description,
             productVendor AS product_vendor,

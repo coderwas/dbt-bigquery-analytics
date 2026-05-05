@@ -1,11 +1,12 @@
 WITH
     orderdetails AS (
         SELECT 
-            orderLineNumber AS order_line_id,
+            orderNumber as order_id,
+            productCode AS product_id,
+            quantityOrdered AS quantity,
             priceEach AS price_each,
-            quantityOrdered AS quantity_ordered,
-            productCode AS product_code,
-            orderNumber as order_id
+            orderLineNumber AS line_id
+            
         FROM
             {{ source('mysql', 'orderdetails') }}
     )
