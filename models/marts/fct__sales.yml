@@ -12,30 +12,34 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim__customer')
-              field: customer_key
+              arguments:
+                to: ref('dim__customer')
+                field: customer_key
 
       - name: product_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim__product')
-              field: product_key
+              arguments:
+                to: ref('dim__product')
+                field: product_key
 
       - name: order_date_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim__date')
-              field: date_key
+              arguments:
+                to: ref('dim__date')
+                field: date_key
 
       - name: order_status_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim__order_status')
-              field: order_status_key
-              
+              arguments:
+                to: ref('dim__order_status')
+                field: order_status_key
+
       - name: quantity_ordered
         tests:
           - not_null
@@ -50,9 +54,13 @@ models:
       - name: is_delayed
         tests:
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+                quote: false
 
       - name: is_cancelled
         tests:
           - accepted_values:
-              values: [0, 1]
+              arguments:
+                values: [0, 1]
+                quote: false 
