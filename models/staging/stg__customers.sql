@@ -12,7 +12,7 @@ WITH
             state,
             postalCode AS postal_code,
             country,
-            salesRepEmployeeNumber AS sales_representative,
+            salesRepEmployeeNumber AS sales_rep_id,
             creditLimit AS credit_limit
 
         FROM

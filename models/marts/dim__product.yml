@@ -1,0 +1,20 @@
+models:
+  - name: dim__product
+    description: SCD2 product dimension
+
+    columns:
+      - name: product_key
+        tests:
+          - not_null
+          - unique
+
+      - name: product_id
+        tests:
+          - not_null
+
+      - name: is_current
+        tests:
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
