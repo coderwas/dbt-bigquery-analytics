@@ -8,7 +8,7 @@ with
     ),
 
     dim_product as (
-        select product_id, product_key from {{ ref('dim__product') }}
+        select product_id, product_key, valid_from, valid_to, buy_price from {{ ref('dim__product') }}
     ),
 
     dim_date as (
@@ -20,24 +20,21 @@ with
     ),
     final as (
         select
-        -- grain
         b.order_line_id as order_line_key,
-
-        -- dimension keys
         dc.customer_key,
         dp.product_key,
-
         dd_order.date_key as order_date_key,
         dd_ship.date_key as shipped_date_key,
-
         dos.order_status_key,
-
-        -- measures
         b.quantity AS quantity_ordered,
         b.price_each,
         b.revenue,
-
-        -- flags
+        dp.buy_price * b.quantity as cost,
+        b.revenue - (dp.buy_price * b.quantity) as profit,
+        safe_divide(
+             b.revenue - (dp.buy_price * b.quantity),
+             b.revenue
+        ) as margin,
         b.is_delayed,
         b.is_cancelled
 
@@ -49,6 +46,7 @@ with
 
         left join dim_product as dp
             on b.product_id = dp.product_id
+            and b.order_date  between dp.valid_from and coalesce(dp.valid_to, current_date)
 
         left join dim_date as dd_order
             on b.order_date = dd_order.date_day
