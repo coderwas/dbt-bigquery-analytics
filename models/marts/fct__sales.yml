@@ -1,0 +1,58 @@
+models:
+  - name: fct__sales
+    description: "Fact table at order line grain"
+
+    columns:
+      - name: order_line_key
+        description: "Unique identifier for each order line"
+        tests:
+          - not_null
+          - unique
+      - name: customer_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__customer')
+              field: customer_key
+
+      - name: product_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__product')
+              field: product_key
+
+      - name: order_date_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__date')
+              field: date_key
+
+      - name: order_status_key
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim__order_status')
+              field: order_status_key
+              
+      - name: quantity_ordered
+        tests:
+          - not_null
+
+      - name: price_each
+        tests:
+          - not_null
+
+      - name: revenue
+        tests:
+          - not_null
+      - name: is_delayed
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+      - name: is_cancelled
+        tests:
+          - accepted_values:
+              values: [0, 1]
