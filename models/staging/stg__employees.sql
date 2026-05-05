@@ -16,4 +16,4 @@ WITH
 
     )
 
-SELECT * FROM empployees
+SELECT * FROM employees
