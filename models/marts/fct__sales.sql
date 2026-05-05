@@ -42,11 +42,13 @@ with
 
         left join dim_customer as dc
             on b.customer_id = dc.customer_id
-            and b.order_date between date(dc.valid_from) and coalesce(date(dc.valid_to), current_date)
+            and b.order_date >= dc.valid_from
+            and (b.order_date < dc.valid_to or dc.valid_to is null)
 
         left join dim_product as dp
             on b.product_id = dp.product_id
-            and b.order_date  between dp.valid_from and coalesce(dp.valid_to, current_date)
+            and b.order_date >= dp.valid_from
+            and (b.order_date < dp.valid_to or dp.valid_to is null)
 
         left join dim_date as dd_order
             on b.order_date = dd_order.date_day

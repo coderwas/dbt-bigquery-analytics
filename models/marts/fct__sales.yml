@@ -10,6 +10,7 @@ models:
           - unique
       - name: customer_key
         tests:
+          - not_null
           - relationships:
               arguments:
                 to: ref('dim__customer')
@@ -17,6 +18,7 @@ models:
 
       - name: product_key
         tests:
+          - not_null
           - relationships:
               arguments:
                 to: ref('dim__product')
